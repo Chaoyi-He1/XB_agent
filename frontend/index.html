@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memristor Crossbar Design Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="title">Memristor Crossbar Design Assistant</h1>
+      <p class="subtitle">ReACT agent: web + local papers for signal processing design</p>
+      <button type="button" class="btn-settings" id="settingsBtn" aria-label="API settings">API settings</button>
+    </header>
+
+    <main class="main">
+      <div class="messages" id="messages">
+        <div class="welcome" id="welcome">
+          <p>Ask about memristor crossbar systems, signal processing, equations, or put PDFs in the <code>papers</code> folder and I’ll search them.</p>
+          <p>Examples:</p>
+          <ul>
+            <li>How do I size word lines for a 128×128 crossbar?</li>
+            <li>Search my local papers for conductance mapping.</li>
+            <li>Recent approaches to sneak path mitigation.</li>
+          </ul>
+        </div>
+      </div>
+      <form class="input-area" id="chatForm">
+        <textarea
+          id="input"
+          class="input"
+          rows="1"
+          placeholder="Message..."
+          autocomplete="off"
+        ></textarea>
+        <button type="submit" class="btn-send" id="sendBtn" aria-label="Send">Send</button>
+      </form>
+    </main>
+  </div>
+
+  <dialog class="modal" id="settingsModal">
+    <div class="modal-content">
+      <h2>API configuration</h2>
+      <p class="modal-hint">Optional: override defaults from server/env. Leave blank to use server-side config.</p>
+      <form id="settingsForm">
+        <label>
+          <span>API URL</span>
+          <input type="url" id="apiUrl" placeholder="https://api.openai.com/v1" />
+        </label>
+        <label>
+          <span>API Key</span>
+          <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        </label>
+        <label>
+          <span>Model name</span>
+          <input type="text" id="modelName" placeholder="gpt-4o-mini" />
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="modalCancel">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
