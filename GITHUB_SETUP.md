@@ -6,6 +6,14 @@ If you see an Xcode license error, run `sudo xcodebuild -license` once and accep
 
 ## Option A: GitHub CLI (if you have `gh` installed)
 
+**First time:** log in so `gh` can create repos and push:
+
+```bash
+gh auth login
+```
+
+Follow the prompts (browser or token). Then:
+
 ```bash
 cd /Users/chaoyihe/Documents/demo1_xb_agent
 
