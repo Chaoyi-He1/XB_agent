@@ -58,4 +58,26 @@ If the repo name is taken, pick another: `gh repo create my-memristor-agent --pr
    git push -u origin main
    ```
 
+## HTTPS: use a Personal Access Token (not your password)
+
+GitHub does **not** accept your account password for `git push` over HTTPS. Use a **Personal Access Token** as the password:
+
+1. **Create a token**
+   - GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**  
+   - Or open: https://github.com/settings/tokens
+   - **Generate new token (classic)**. Name it (e.g. `git-push`), choose expiry, tick **repo**
+   - Generate, then **copy the token** (you won’t see it again).
+
+2. **Push with the token**
+   - Run: `git push -u origin main`
+   - When prompted for **Password**, paste the **token** (not your GitHub password).
+
+3. **Save the token so you don’t re-enter it** (optional):
+   ```bash
+   git config --global credential.helper store
+   ```
+   Next time you push and enter the token, Git will store it. (Use `osxkeychain` on macOS instead of `store` if you prefer the Keychain.)
+
+**Alternative:** use SSH so you don’t need a token: add your SSH key to GitHub, then use the `git@github.com:...` remote and push (no password prompt).
+
 Done. Your project will be at `https://github.com/YOUR_USERNAME/demo1_xb_agent`.
