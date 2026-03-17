@@ -13,6 +13,7 @@ from langgraph.prebuilt import create_react_agent
 
 from config import get_settings
 from src.agent.prompts import REACT_SYSTEM_PROMPT
+from src.agent.skills_loader import load_skills_prompt
 from src.agent.tools import get_tools
 
 
@@ -27,11 +28,15 @@ def _make_llm(api_url: Optional[str] = None, api_key: Optional[str] = None, mode
 
 
 def _react_prompt() -> str:
-    """System prompt for the LangGraph ReACT agent."""
-    return (
+    """System prompt for the LangGraph ReACT agent (base + skills)."""
+    base = (
         REACT_SYSTEM_PROMPT
         + "\n\nIf you need more details from the user, respond with exactly one short question."
     )
+    skills_text = load_skills_prompt()
+    if skills_text:
+        base = base + "\n\n" + skills_text
+    return base
 
 
 def create_agent(

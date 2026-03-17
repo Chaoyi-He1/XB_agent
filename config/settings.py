@@ -1,6 +1,7 @@
 """Application settings loaded from environment variables."""
 
 from pathlib import Path
+from typing import Optional
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,11 +21,15 @@ class Settings(BaseSettings):
     model_list: str = "gpt-4o-mini,gpt-4o,gpt-4-turbo,gpt-4,gpt-3.5-turbo"
     papers_path: Path = Path("papers")
     data_dir: Path = Path("data")
+    mcp_servers_file: Optional[str] = None   # path to mcp_servers.json; default config/mcp_servers.json
+    skills_dir: Optional[Path] = None        # path to skills/; default ./skills
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.papers_path = Path(self.papers_path).expanduser().resolve()
         self.data_dir = Path(self.data_dir).expanduser().resolve()
+        if self.skills_dir is not None:
+            self.skills_dir = Path(self.skills_dir).expanduser().resolve()
 
     @property
     def model_list_parsed(self) -> list[str]:

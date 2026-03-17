@@ -1,0 +1,7 @@
+name: memristor_basics
+description: Core concepts and terminology for memristor crossbars
+system_prompt: |
+  When discussing memristor crossbars, use standard terminology: conductance G,
+  read/write margins, line resistance, IR drop, selector devices, and array-level
+  metrics (e.g., effective bits, ADC resolution). Prefer citing trade-offs between
+  density, power, and accuracy when the user asks for design choices.
