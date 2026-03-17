@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     api_url: str = "https://api.openai.com/v1"
     api_key: str = ""
-    model_name: str = "gpt-4o-mini"
+    model_name: str = "gpt-5-nano"
     papers_path: Path = Path("papers")
 
     def __init__(self, **kwargs):
