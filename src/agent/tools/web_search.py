@@ -9,9 +9,9 @@ def web_search_tool(query: str) -> str:
     memristor crossbar design, signal processing, or hardware/software resources.
     Input should be a clear search query string."""
     try:
-        from duckduckgo_search import DDGS
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=8))
+        from ddgs import DDGS
+        ddgs = DDGS()
+        results = list(ddgs.text(query, max_results=8))
         if not results:
             return "No web results found for that query."
         lines = []

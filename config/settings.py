@@ -16,12 +16,19 @@ class Settings(BaseSettings):
 
     api_url: str = "https://api.openai.com/v1"
     api_key: str = ""
-    model_name: str = "gpt-5-nano"
+    model_name: str = "gpt-4o-mini"
+    model_list: str = "gpt-4o-mini,gpt-4o,gpt-4-turbo,gpt-4,gpt-3.5-turbo"
     papers_path: Path = Path("papers")
+    data_dir: Path = Path("data")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.papers_path = Path(self.papers_path).expanduser().resolve()
+        self.data_dir = Path(self.data_dir).expanduser().resolve()
+
+    @property
+    def model_list_parsed(self) -> list[str]:
+        return [m.strip() for m in self.model_list.split(",") if m.strip()]
 
 
 @lru_cache

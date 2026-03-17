@@ -1,11 +1,15 @@
 """ReACT agent for memristor crossbar design: uses LLM with web + local paper tools."""
 
-from typing import Any, Optional
+from typing import Optional
 
-from langchain_core.prompts import PromptTemplate
+import warnings
+
+from langchain_core.messages import AIMessage, BaseMessage
 from langchain_openai import ChatOpenAI
-from langchain.agents import create_react_agent, AgentExecutor
 from langchain_core.tools import BaseTool
+
+warnings.filterwarnings("ignore", module="langgraph")
+from langgraph.prebuilt import create_react_agent
 
 from config import get_settings
 from src.agent.prompts import REACT_SYSTEM_PROMPT
@@ -22,29 +26,11 @@ def _make_llm(api_url: Optional[str] = None, api_key: Optional[str] = None, mode
     )
 
 
-def _react_prompt() -> PromptTemplate:
-    """ReACT prompt with tools, tool_names, input, agent_scratchpad (LangChain convention)."""
-    return PromptTemplate.from_template(
+def _react_prompt() -> str:
+    """System prompt for the LangGraph ReACT agent."""
+    return (
         REACT_SYSTEM_PROMPT
-        + """
-
-You have access to the following tools:
-
-{tools}
-
-Use this format:
-Thought: consider what to do next
-Action: the exact name of one tool from [{tool_names}]
-Action Input: the input for the tool (single string)
-Observation: the result will be inserted here
-... (repeat Thought/Action/Action Input/Observation as needed)
-Thought: I now know the final answer
-Final Answer: your answer for the user
-
-Begin!
-
-Question: {input}
-{agent_scratchpad}"""
+        + "\n\nIf you need more details from the user, respond with exactly one short question."
     )
 
 
@@ -54,17 +40,35 @@ def create_agent(
     api_key: Optional[str] = None,
     model_name: Optional[str] = None,
     papers_path: Optional[str] = None,
-) -> AgentExecutor:
-    """Build ReACT agent with optional overrides for API and papers path."""
+):
+    """Build a LangGraph ReACT agent with optional overrides for API and papers path."""
     from pathlib import Path
     llm = _make_llm(api_url=api_url, api_key=api_key, model_name=model_name)
     tool_list = tools or get_tools(papers_path=Path(papers_path) if papers_path else None)
     prompt = _react_prompt()
-    agent = create_react_agent(llm, tool_list, prompt)
-    return AgentExecutor(agent=agent, tools=tool_list, handle_parsing_errors=True, max_iterations=10)
+    return create_react_agent(llm, tool_list, prompt=prompt, version="v2")
 
 
-def run_agent(agent: AgentExecutor, user_message: str) -> str:
-    """Run the agent and return the final answer string."""
-    result = agent.invoke({"input": user_message})
-    return result.get("output", "No response generated.")
+def run_agent(agent, messages: list[BaseMessage]) -> str:
+    """Run the agent and return the final assistant message."""
+    result = agent.invoke({"messages": messages})
+    output_messages = result.get("messages", []) if isinstance(result, dict) else []
+    for msg in reversed(output_messages):
+        if isinstance(msg, AIMessage):
+            return msg.content or "No response generated."
+    return "No response generated."
+
+
+def normalize_clarification(reply: str) -> tuple[bool, str]:
+    """Detect clarification-style replies from the agent."""
+    cleaned = reply.strip()
+    upper = cleaned.upper()
+    if upper.startswith("FINAL ANSWER:"):
+        cleaned = cleaned.split(":", 1)[1].strip() if ":" in cleaned else cleaned
+        upper = cleaned.upper()
+    if upper.startswith("CLARIFY:"):
+        return True, cleaned[len("CLARIFY:") :].strip()
+    if "CLARIFY:" in upper:
+        idx = upper.find("CLARIFY:")
+        return True, cleaned[idx + len("CLARIFY:") :].strip()
+    return False, cleaned

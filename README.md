@@ -9,6 +9,8 @@ A **ReACT agent** that helps design memristor crossbar systems for signal proces
 - **Local papers**: put PDFs or TXT files in a folder; the agent searches them by keyword.
 - **Chat UI**: ChatGPT-style chat in the browser.
 - **Configurable API**: set `API_URL`, `API_KEY`, and optionally `MODEL_NAME` via env or in the UI.
+- **Conversation state**: the browser keeps a stable session id so clarification follow-ups stay in the same thread.
+- **Chat history**: past chats are listed in the left sidebar and persisted under `DATA_DIR` (default `./data`) so you can reopen and continue any conversation.
 
 ## Project layout (easy to extend)
 
@@ -29,6 +31,7 @@ A **ReACT agent** that helps design memristor crossbar systems for signal proces
 │   ├── index.html
 │   └── static/
 ├── papers/                 # Default folder for local papers (create and add PDFs)
+├── data/                   # Stored chat sessions (created automatically; optional DATA_DIR in .env)
 ├── .env.example
 ├── requirements.txt
 ├── run.py
